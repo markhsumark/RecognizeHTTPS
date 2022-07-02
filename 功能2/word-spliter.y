@@ -2,23 +2,16 @@
 #include <stdio.h>
 #include <string.h>
 #define YYSTYPE char *
-int yylex();
-void yyerror(const char *s);
 %}
 
-
-%token CHAR CHAR_CAP EOL
-%token HTTPS FILETYPE TLD TLD_cc
+%token CHAR CHAR_CAP
+%token HTTPS FILETYPE TLD TLD_cc EOL DOT
 %%
-httpslines:HTTPS DOMAIN EOL            {printf("catch: %s%s\n", $1, $2);}
-  |HTTPS DOMAIN PATH EOL              {printf("catch: %s%s%s\n", $1, $2, $3);}
-  |HTTPS DOMAIN PATH FILETYPE EOL      {printf("catch: %s%s%s%s\n", $1, $2, $3, $4);}
-  ;
+httpslines:HTTPS DOMAIN EOL           {printf("catch: %s%s\n", $1, $2);}
+  |HTTPS DOMAIN PATH EOL               {printf("catch: %s%s%s\n", $1, $2, $3);}
+  |HTTPS DOMAIN PATH FILETYPE EOL     {printf("catch: %s%s%s%s\n", $1, $2, $3, $4);}
+  |DOMAIN EOL                          {printf("catch: %s\n", $1);};
   
-D_NAME:/*nothing*/
-  |CHAR D_NAME                {strcpy($$, strcat($1, $2));}
-  ;
-
 PATH:"/" PATH_NAME                {strcpy($$, strcat("/", $2));}
   |"/" PATH_NAME "/"              {strcpy($$, strcat("/", strcat("/", $2)));}
   ;
@@ -26,9 +19,12 @@ PATH:"/" PATH_NAME                {strcpy($$, strcat("/", $2));}
 PATH_NAME:/*nothing*/
   |CHAR_CAP PATH_NAME             {strcpy($$, strcat($1, $2));}
   ; 
-    
+  
+D_NAME:/*nothing*/
+  |CHAR D_NAME                	  {strcpy($$, strcat($1, $2));printf("test: %s\n",$$);}
+  ;    
 
-DD_NAME:D_NAME DD_NAME         {strcpy($$, strcat($1, strcat(".", $3)));}
+DD_NAME:D_NAME DOT DD_NAME        {strcpy($$, strcat(strcat($1, "."),$3);}
   |D_NAME                         {strcpy($$, $1);}
   ;
     
@@ -45,7 +41,7 @@ int main(int argc,char **argv){
 	yyparse();
 }
 
-void yyerror(const char *s)
+yyerror(char *s)
 {
  fprintf(stderr,"error:%s\n",s);
 } 
