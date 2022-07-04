@@ -10,6 +10,6 @@ make
 ### 使用.y檔（判斷輸入的字串是否為https合法網址）
 ```
 flex word-spliter.l
-bison -d word-spliter.y
-gcc word-spliter.tab.c lex.yy.c -lfl          (-lfl在MacOS中移除)
+bison -d word-spli.y
+gcc word-spli.tab.c lex.yy.c -lfl          (-lfl在MacOS中移除)
 ```
